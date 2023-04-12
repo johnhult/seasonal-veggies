@@ -21,11 +21,6 @@ export const createPages: GatsbyNode['createPages'] = async ({
         }
       }
     `);
-  // await graphql<Queries.allMonthsQuery>(`
-  //   query allMonths {
-  //     month
-  //   }
-  // `);
   if (errors) {
     reporter.panic(
       '🚨 Errors when grabbing your DatoCMS entry 🚨',
@@ -43,8 +38,7 @@ export const createPages: GatsbyNode['createPages'] = async ({
           .toLowerCase();
         for (const m of data.months.nodes) {
           actions.createPage({
-            path: `:month/${slug}`,
-            matchPath: `:month/${slug}`,
+            path: `${m.name}/${slug}`,
             component: path.resolve(`./src/templates/VegGroup/index.tsx`),
             context: { slug: slug, queryName: veg.groupname, month: m.name },
           });

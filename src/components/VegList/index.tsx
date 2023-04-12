@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as V from 'lib/Veg';
 import ListItem from 'components/ListItem';
 import styled from 'styled-components';
-import { VeggiesEntry } from 'types/veggies';
+import { VeggiesEntry, VeggiesEntryInContext } from 'types/veggies';
 
 interface VegListProps {
   data: VeggiesEntry[];
@@ -10,27 +10,23 @@ interface VegListProps {
 }
 
 const VegList: React.FC<VegListProps> = ({ data, monthName }) => {
-  const vegWithGroupList = [] as VeggiesEntry[];
-  data.forEach((v) => {
-    if (!V.isGroup(v)) {
-      vegWithGroupList.push(v);
-    } else if (
-      !vegWithGroupList.some((vegInList) => v.isInGroup === vegInList.isInGroup)
-    ) {
-      vegWithGroupList.push(v);
-    }
-  });
-  console.log(vegWithGroupList);
+  const [vegList, setVegList] = React.useState<VeggiesEntryInContext[]>([]);
+  React.useEffect(() => {
+    setVegList(V.parseVeggiesToRemoveDoubles(data));
+  }, [data]);
+
   return (
     <OrderedList>
-      {vegWithGroupList
+      {vegList
         .sort((a, b) => {
-          const nameA = V.isGroup(a) ? a.isInGroup : a.name;
-          const nameB = V.isGroup(b) ? b.isInGroup : b.name;
+          const nameA =
+            V.isGroup(a) && !a.isSingleOccurence ? a.isInGroup : a.name;
+          const nameB =
+            V.isGroup(b) && !b.isSingleOccurence ? b.isInGroup : b.name;
           return nameA.localeCompare(nameB);
         })
-        .map((item) => {
-          return <ListItem key={item.id} veg={item} monthName={monthName} />;
+        .map((veg) => {
+          return <ListItem key={veg.id} veg={veg} monthName={monthName} />;
         })}
     </OrderedList>
   );

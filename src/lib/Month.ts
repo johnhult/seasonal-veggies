@@ -30,6 +30,20 @@ export const parseMonth = (m?: string): Month => {
   }
 };
 
+export const getFirstDateOfMonthFromMMonth = (m: Month): Date => {
+  const d = new Date();
+  return D.setMonth(getMonthNumberFromName(m))(D.startOfMonth(d));
+};
+
+export const getPrevOrNextMonth = (m: Month, incOrDec: 1 | -1): Month => {
+  return pipe(
+    m,
+    getFirstDateOfMonthFromMMonth,
+    D.addMonths(incOrDec),
+    getMonthNameFromDate
+  );
+};
+
 export const getMonthNameFromDate = (d: Date): Month => {
   return pipe(d, D.format('MMM'), toLowerCase, parseMonth);
 };

@@ -11,3 +11,7 @@ export interface VeggiesEntry {
 export interface VeggiesEntryInGroup extends Omit<VeggiesEntry, 'isInGroup'> {
   isInGroup: string;
 }
+
+export interface VeggiesEntryInContext extends VeggiesEntry {
+  isSingleOccurence: boolean;
+}

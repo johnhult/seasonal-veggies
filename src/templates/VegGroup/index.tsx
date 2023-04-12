@@ -1,29 +1,27 @@
 import { graphql, navigate, PageProps } from 'gatsby';
 import * as React from 'react';
-import * as V from 'lib/Veg';
-import * as M from 'lib/Month';
 import styled from 'styled-components';
 import { useGetGap } from 'helpers/style';
 import IconButton from 'components/IconButton';
 import { Icons } from 'components/Icon';
-import ListItem from 'components/ListItem';
 import { VeggiesEntry } from 'types/veggies';
+import VegList from 'components/VegList';
 
 type VegGroupProps = {
-  month?: string;
+  month: string;
 };
 
-const VegGroup: React.FC<
-  PageProps<Queries.veggiePageQuery> & VegGroupProps
-> = ({ data, month }) => {
-  const veg = data.veggie.nodes;
-  console.log(veg);
-
+const VegGroup: React.FC<PageProps<Queries.veggiePageQuery, VegGroupProps>> = ({
+  data: {
+    veggie: { nodes: vegs },
+  },
+  pageContext: { month },
+}) => {
   React.useEffect(() => {
-    if (!M.isMonth(month)) {
-      navigate('/');
+    if (vegs.length === 1 || vegs.length === 0) {
+      navigate(`/${month}`);
     }
-  }, [month]);
+  }, [month, vegs]);
 
   return (
     <MaxWidthWrapper>
@@ -35,16 +33,8 @@ const VegGroup: React.FC<
         />
       </StyledHeader>
       <PaddingWrapper>
-        {veg.map((item) => {
-          console.log(V.isGroup(item as VeggiesEntry));
-          return (
-            <ListItem
-              key={item.id}
-              veg={item as unknown as VeggiesEntry}
-              monthName={month || ''}
-            />
-          );
-        })}
+        {/* TODO: FIX TYPECAST, WORKS BUT ISN'T PROPER */}
+        <VegList data={vegs as unknown as VeggiesEntry[]} monthName={month} />
       </PaddingWrapper>
     </MaxWidthWrapper>
   );

@@ -4,9 +4,6 @@ import { Redirect } from '@reach/router';
 
 const IndexPage: React.FC = ({ ...props }) => {
   const d = M.getMonthNameFromDate(new Date());
-  // React.useEffect(() => {
-  //   navigate(`/${d}`);
-  // }, []);
   return <Redirect noThrow to={`/${d}`} />;
 };
 

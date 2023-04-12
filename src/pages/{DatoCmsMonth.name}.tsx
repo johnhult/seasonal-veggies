@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { graphql, HeadFC, PageProps } from 'gatsby';
+import { graphql, HeadFC, Link, PageProps } from 'gatsby';
 import Header, { HeaderTypes } from 'components/Header';
 import styled from 'styled-components';
 import { useGetGap } from 'helpers/style';
@@ -9,26 +9,27 @@ import * as V from 'lib/Veg';
 import IconButton from 'components/IconButton';
 import { enUS, sv } from 'date-fns/locale';
 import VegList from 'components/VegList';
-import { Icons } from 'components/Icon';
-import { useMonthHelper } from 'hooks/useMonthHelper';
+import Icon, { Icons } from 'components/Icon';
+// import { useMonthHelper } from 'hooks/useMonthHelper';
 
 type MonthPageParams = {
   month: string;
 };
 
 const MonthPage: React.FC<
-  PageProps<Queries.allVeggiesPerMonthQuery> & MonthPageParams
+  PageProps<Queries.allVeggiesPerMonthQuery, null, MonthPageParams>
 > = ({ data, params: { name: monthUrl }, ...props }) => {
-  console.log(monthUrl);
   const verfiedUrl = M.parseMonth(monthUrl);
 
-  const { month, setMonthIncDec } = useMonthHelper(
-    M.getMonthNumberFromName(verfiedUrl) || undefined
-  );
+  const [month] = React.useState(verfiedUrl);
+
+  // const setMonthIncDec = (incOrDec: 1 | -1) => {
+  //   if(incOrDec === 1) {
+  //     navigate
+  //   }
+  // }
 
   const veggies = V.parseQueryNodesToVegEntries(data);
-  console.log(veggies);
-  // console.log(location);
 
   return (
     <MaxWidthWrapper>
@@ -39,28 +40,19 @@ const MonthPage: React.FC<
       </StyledHeader>
       <MainSection>
         <Nav>
-          <IconButton
-            size='medium'
-            onClick={() => setMonthIncDec(-1)}
-            type={Icons.ARROW_L}
-          />
+          <Link to={`/${M.getPrevOrNextMonth(month, -1)}`}>
+            <Icon size='medium' type={Icons.ARROW_L} />
+          </Link>
           <WidthHeader type={HeaderTypes.H3}>
-            {D.formatWithOptions({ locale: sv })('MMMM')(month)}
+            {D.formatWithOptions({ locale: sv })('MMMM')(
+              M.getFirstDateOfMonthFromMMonth(month)
+            )}
           </WidthHeader>
-          <IconButton
-            size='medium'
-            onClick={() => setMonthIncDec(1)}
-            type={Icons.ARROW_R}
-          />
+          <Link to={`/${M.getPrevOrNextMonth(month, 1)}`}>
+            <Icon size='medium' type={Icons.ARROW_R} />
+          </Link>
         </Nav>
-        {veggies && (
-          <VegList
-            monthName={D.formatWithOptions({ locale: enUS })('MMM')(
-              month
-            ).toLowerCase()}
-            data={veggies}
-          />
-        )}
+        {veggies && <VegList monthName={month} data={veggies} />}
       </MainSection>
     </MaxWidthWrapper>
   );

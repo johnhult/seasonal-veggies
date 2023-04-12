@@ -3,11 +3,11 @@ import { Link } from 'gatsby';
 import { useGetGap } from 'helpers/style';
 import * as React from 'react';
 import styled from 'styled-components';
-import { VeggiesEntry } from 'types/veggies';
+import { VeggiesEntryInContext } from 'types/veggies';
 import * as V from 'lib/Veg';
 
 interface ListItemProps {
-  veg: VeggiesEntry;
+  veg: VeggiesEntryInContext;
   monthName: string;
 }
 
@@ -19,18 +19,19 @@ const LinkWrapper: React.FC<React.PropsWithChildren<{ to?: string }>> = ({
 };
 
 const ListItem: React.FC<ListItemProps> = ({ veg, monthName, ...props }) => {
-  console.log(veg);
   return (
     <LinkWrapper
       to={
-        V.isGroup(veg)
+        V.isGroup(veg) && !veg.isSingleOccurence
           ? `/${monthName}/${V.getSlugFromName(veg.isInGroup)}`
           : undefined
       }
     >
-      <StyledListItem {...props} $isGroup={V.isGroup(veg)}>
-        {V.isGroup(veg) ? veg.isInGroup : veg.name}
-        {V.isGroup(veg) && <StyledIcon type={Icons.EXPAND} size='xSmall' />}
+      <StyledListItem {...props} $isGroup={!veg.isSingleOccurence}>
+        {V.isGroup(veg) && !veg.isSingleOccurence ? veg.isInGroup : veg.name}
+        {!veg.isSingleOccurence && (
+          <StyledIcon type={Icons.EXPAND} size='xSmall' />
+        )}
       </StyledListItem>
     </LinkWrapper>
   );
